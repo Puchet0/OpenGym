@@ -29,20 +29,22 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      # ── Core (mirrors .env; Coolify reads these and pre-fills the env form) ──
+      # ── Core (Coolify 4.3 reads ${VAR} from the compose and pre-fills the env panel as
+      #    editable values; the :-default keeps a sane local fallback. Nothing is hard-baked.) ──
       PORT: "3000"            # internal port (nginx proxies here) — do not change
       DATA_DIR: /data
       COACH_CODEX_HOME: /codex
-      RP_ID: localhost
-      ORIGIN: http://localhost:8080
-      RP_NAME: openGym
+      RP_ID: ${RP_ID:-localhost}
+      ORIGIN: ${ORIGIN:-http://localhost:8080}
+      RP_NAME: ${RP_NAME:-openGym}
       # ── AI Coach via self-hosted OmniRoute gateway (OpenAI-compatible /v1/chat/completions) ──
       # The container reaches the gateway by its LAN address, not localhost (localhost = the
-      # container itself). The bearer key is also settable in the admin dashboard (AI Coach →
-      # Add API key). Coolify will pick up OMNIROUTE_* below; mark OMNIROUTE_API_KEY as secret there.
-      OMNIROUTE_BASE_URL: http://192.168.1.207:20128
-      OMNIROUTE_MODEL: nvidia/nvidia/nemotron-3-super-120b-a12b
-      OMNIROUTE_API_KEY: sk-9a7009140db70da7-c20409-703a426e
+      # container itself). OMNIROUTE_API_KEY has no default so it is NOT baked into the file;
+      # set it as an editable (and secret) variable in the Coolify panel. It is also settable
+      # in the admin dashboard (AI Coach → Add API key).
+      OMNIROUTE_BASE_URL: ${OMNIROUTE_BASE_URL:-http://192.168.1.207:20128}
+      OMNIROUTE_MODEL: ${OMNIROUTE_MODEL:-nvidia/nvidia/nemotron-3-super-120b-a12b}
+      OMNIROUTE_API_KEY: ${OMNIROUTE_API_KEY}
     volumes:
       - ./data:/data         # users, passkeys, per-user state, session secret — BACK THIS UP
       # ChatGPT/Codex refresh tokens are kept separate from app data and mounted only into the

@@ -32,7 +32,11 @@ export const PROVIDERS = {
   codex: { label: 'OpenAI Codex CLI', runtime: 'OpenAI Codex CLI', deviceLogin: true, apiKeyEnv: null, oauthEnv: null },
   // Test-only: drives the in-repo fixture CLI. Selectable so an instance can be exercised
   // end-to-end (and demoed) without any AI account at all.
-  fixture: { label: 'Fixture (testing)', runtime: 'Fixture', apiKeyEnv: null, oauthEnv: null }
+  fixture: { label: 'Fixture (testing)', runtime: 'Fixture', apiKeyEnv: null, oauthEnv: null },
+  // Self-hosted OmniRoute gateway: an OpenAI-compatible /v1/chat/completions endpoint that can
+  // route to many providers and free tiers. Single bearer key; combos like free/gym are chosen
+  // via the model field (default free/gym). Point OMNIROUTE_BASE_URL at the reachable gateway.
+  omniroute: { label: 'OmniRoute', runtime: 'OmniRoute gateway', apiKeyEnv: 'OMNIROUTE_API_KEY', oauthEnv: null }
 };
 
 const DEFAULTS = {

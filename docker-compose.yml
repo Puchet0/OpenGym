@@ -32,6 +32,11 @@ services:
       - PORT=3000            # internal port (nginx proxies here) — do not change
       - DATA_DIR=/data
       - COACH_CODEX_HOME=/codex
+      # AI Coach via self-hosted OmniRoute gateway (OpenAI-compatible /v1/chat/completions).
+      # The container reaches the gateway by its LAN address, not localhost (localhost = the
+      # container itself). The bearer key is set in the admin dashboard (AI Coach → Add API key)
+      # or via OMNIROUTE_API_KEY in .env; the model defaults to free/gym and is overridable there.
+      - OMNIROUTE_BASE_URL=http://192.168.1.207:20128
     volumes:
       - ./data:/data         # users, passkeys, per-user state, session secret — BACK THIS UP
       # ChatGPT/Codex refresh tokens are kept separate from app data and mounted only into the

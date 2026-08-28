@@ -50,6 +50,8 @@ services:
       OMNIROUTE_BASE_URL: ${OMNIROUTE_BASE_URL:-http://192.168.1.207:20128}
       OMNIROUTE_MODEL: ${OMNIROUTE_MODEL:-nvidia/nvidia/nemotron-3-super-120b-a12b}
       OMNIROUTE_API_KEY: ${OMNIROUTE_API_KEY}
+      ADMIN_UIDS: ${ADMIN_UIDS:-Puchet}
+      COACH_DISABLED: ${COACH_DISABLED:-false}
     volumes:
       - ./data:/data         # users, passkeys, per-user state, session secret — BACK THIS UP
       # ChatGPT/Codex refresh tokens are kept separate from app data and mounted only into the

@@ -39,3 +39,10 @@ export const PLANS = [
 ]
 
 export const planById = id => PLANS.find(p => p.id === id)
+
+// Flat library of every predefined routine, one entry per routine (not per plan),
+// so users can load them individually instead of all-or-nothing per plan.
+export const ROUTINE_LIBRARY = () => PLANS.flatMap(p => {
+  const customs = p.customExercises()
+  return p.routines().map(r => ({ ...r, plan: p, customs }))
+})

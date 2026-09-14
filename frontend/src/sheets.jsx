@@ -86,6 +86,40 @@ function planSelectorSheet() {
   </>)
 }
 
+/* ============================ individual routine library ============================ */
+// Loads one predefined routine at a time — the plan selector above is all-or-nothing,
+// which is too much for people who only want e.g. one leg day.
+export function routineLibrarySheet() {
+  ui().openSheet(close => <>
+    <h3>{t('Load routine')}</h3>
+    <div className="muted small" style={{ marginBottom: 16 }}>{t('Pick a predefined routine to add to your plan.')}</div>
+    <div className="list">
+      {ROUTINE_LIBRARY().map(e => (
+        <button key={e.id} className="item tap" onClick={() => { close(); loadRoutine(e) }}>
+          <span className="lrow-i"><Icon name={glyphOf(e.emoji)} /></span>
+          <div className="grow">
+            <div className="tt">{e.name}</div>
+            <div className="ss">{e.plan.name} · {exCount(e.ex.length)}</div>
+          </div>
+          <Icon name="chevronRight" className="chev" />
+        </button>
+      ))}
+    </div>
+  </>)
+}
+
+function loadRoutine(entry) {
+  update(st => {
+    if (entry.customs.length) {
+      st.customEx = st.customEx || []
+      entry.customs.forEach(c => { if (!st.customEx.find(x => x.id === c.id)) st.customEx.push(c) })
+      registerCustom(st.customEx)
+    }
+    st.routines.push({ id: entry.id, name: entry.name, emoji: entry.emoji, ex: entry.ex })
+  })
+  toast(t('Routine loaded: {0}', entry.name))
+}
+
 /* ============================ weight picker (shared: body weight + goal) ============================ */
 // Fixed range, not a moving window — a window that resizes itself mid-drag (the previous
 // attempt) makes the thumb's position unpredictable: every time it grows, everything already

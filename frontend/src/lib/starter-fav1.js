@@ -4,7 +4,7 @@
 import { uid } from './format.js'
 
 const SPEC = [
-  ['Superior', '🏋️', [
+  ['Favorito de la comunidad · Superior', '🏋️', [
     ['0314', 3, 10],  // dumbbell incline bench press
     ['1350', 3, 10],  // lever seated row
     ['0579', 3, 10],  // lever front pulldown
@@ -14,7 +14,7 @@ const SPEC = [
     ['0194', 3, 10],  // cable overhead triceps extension (rope attachment)
     ['0602', 3, 12],  // lever seated reverse fly
   ]],
-  ['Inferior', '🦵', [
+  ['Favorito de la comunidad · Inferior', '🦵', [
     ['0743', 3, 8],   // sled hack squat
     ['0085', 3, 10],  // barbell romanian deadlift
     ['0099', 3, 10],  // barbell single leg split squat
@@ -23,7 +23,7 @@ const SPEC = [
     ['1372', 3, 15],  // barbell standing calf raise
     ['0175', 3, 12],  // cable kneeling crunch
   ]],
-  ['Full', '💪', [
+  ['Favorito de la comunidad · Full', '💪', [
     ['0739', 3, 10],  // sled 45° leg press
     ['0651', 3, 8],   // pull up (neutral grip)
     ['0576', 3, 10],  // lever chest press

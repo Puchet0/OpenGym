@@ -17,7 +17,7 @@ export const CUSTOM_EXERCISES = [
 
 // [name, emoji, [[exerciseId, sets, reps, restSeconds], ...]]
 const SPEC = [
-  ['Día 1', '🏋️', [
+  ['Semana 1 · Día 1', '🏋️', [
     ['1436',  3, 6,  240],  // Sentadilla Trasera → barbell high bar squat
     ['0025',  3, 10, 180],  // Press Banca → barbell bench press
     ['0085',  3, 10, 180],  // Peso Muerto Rumano → barbell romanian deadlift
@@ -25,7 +25,7 @@ const SPEC = [
     ['1372',  3, 10, 120],  // Elevación Gemelos de Pie → barbell standing calf raise
     ['1653',  3, 10, 90],   // Curl Bíceps Mancuerna → dumbbell bicep curl with stork stance
   ]],
-  ['Día 2', '💪', [
+  ['Semana 1 · Día 2', '💪', [
     ['0032',  3, 5,  240],  // Peso Muerto → barbell deadlift
     ['1457',  3, 8,  240],  // Press Militar → barbell standing wide military press
     ['1351',  3, 12, 150],  // Remo Barra T → lever t-bar reverse grip row
@@ -34,7 +34,7 @@ const SPEC = [
     ['C003',  3, 12, 60],   // Crunch Abdominal → crunch (custom, body weight)
     ['0351',  3, 12, 90],   // Skull Crusher Mancuerna → dumbbell lying triceps extension
   ]],
-  ['Día 3', '🔥', [
+  ['Semana 1 · Día 3', '🔥', [
     ['0336',  3, 10, 150],  // Zancada Mancuerna → dumbbell lunge
     ['0314',  3, 8,  150],  // Press Inclinado Mancuernas → dumbbell incline bench press
     ['0245',  3, 10, 150],  // Jalon Polea Supino → cable underhand pulldown

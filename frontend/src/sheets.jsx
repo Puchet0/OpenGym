@@ -87,37 +87,61 @@ function planSelectorSheet() {
 }
 
 /* ============================ individual routine library ============================ */
-// Loads one predefined routine at a time — the plan selector above is all-or-nothing,
-// which is too much for people who only want e.g. one leg day.
+// Loads one or several predefined routines at a time — the plan selector above is
+// all-or-nothing, which is too much for people who only want e.g. one leg day.
+// Tapping an entry only toggles its checkmark; the footer button loads everything
+// selected in one go.
 export function routineLibrarySheet() {
-  ui().openSheet(close => <>
+  const entries = ROUTINE_LIBRARY()
+  ui().openSheet(close => <RoutineLibrarySheet close={close} entries={entries} />)
+}
+
+function RoutineLibrarySheet({ close, entries }) {
+  const [sel, setSel] = useState(() => new Set())
+  const toggle = id => setSel(prev => {
+    const n = new Set(prev)
+    n.has(id) ? n.delete(id) : n.add(id)
+    return n
+  })
+  const load = () => {
+    close()
+    const chosen = entries.filter(e => sel.has(e.id))
+    if (chosen.length) loadRoutines(chosen)
+  }
+  return <>
     <h3>{t('Load routine')}</h3>
-    <div className="muted small" style={{ marginBottom: 16 }}>{t('Pick a predefined routine to add to your plan.')}</div>
+    <div className="muted small" style={{ marginBottom: 16 }}>{t('Pick one or several predefined routines.')}</div>
     <div className="list">
-      {ROUTINE_LIBRARY().map(e => (
-        <button key={e.id} className="item tap" onClick={() => { close(); loadRoutine(e) }}>
-          <span className="lrow-i"><Icon name={glyphOf(e.emoji)} /></span>
+      {entries.map(e => (
+        <button key={e.id} className="item tap" onClick={() => toggle(e.id)}>
+          <span className="lrow-i" style={sel.has(e.id) ? { color: 'var(--acc)' } : undefined}>
+            <Icon name={sel.has(e.id) ? 'checkCircle' : glyphOf(e.emoji)} />
+          </span>
           <div className="grow">
             <div className="tt">{e.name}</div>
             <div className="ss">{e.plan.name} · {exCount(e.ex.length)}</div>
           </div>
-          <Icon name="chevronRight" className="chev" />
         </button>
       ))}
     </div>
-  </>)
+    <Button variant="primary" icon="download" disabled={!sel.size} onClick={load}>
+      {t('Load {0}', sel.size || '')}
+    </Button>
+  </>
 }
 
-function loadRoutine(entry) {
+function loadRoutines(chosen) {
+  const routines = chosen.map(({ plan, customs, ...r }) => r)
+  const customs = [...new Map(chosen.flatMap(e => e.customs).map(c => [c.id, c])).values()]
   update(st => {
-    if (entry.customs.length) {
+    if (customs.length) {
       st.customEx = st.customEx || []
-      entry.customs.forEach(c => { if (!st.customEx.find(x => x.id === c.id)) st.customEx.push(c) })
+      customs.forEach(c => { if (!st.customEx.find(x => x.id === c.id)) st.customEx.push(c) })
       registerCustom(st.customEx)
     }
-    st.routines.push({ id: entry.id, name: entry.name, emoji: entry.emoji, ex: entry.ex })
+    routines.forEach(r => st.routines.push(r))
   })
-  toast(t('Routine loaded: {0}', entry.name))
+  toast(chosen.length === 1 ? t('Routine loaded: {0}', chosen[0].name) : t('{0} routines loaded', chosen.length))
 }
 
 /* ============================ weight picker (shared: body weight + goal) ============================ */

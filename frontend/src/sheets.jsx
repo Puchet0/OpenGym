@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useStore } from './store/useStore.js'
 import { useUI } from './store/useUI.js'
-import { EXDB, EXIDX, BODYPARTS, isCardio, allExercises, equipmentOf } from './lib/exercises.js'
+import { EXDB, EXIDX, BODYPARTS, isCardio, allExercises, equipmentOf, registerCustom } from './lib/exercises.js'
 import { fmtDate, fmtNum, fmtVol, fmtDur, durPart, todayISO, uid, exCount, DAYN, MONTHS_LONG, ACCENTS } from './lib/format.js'
 import { lastEntryFor, bestWeightFor, buildSets, effectiveRoutineId, workoutVolume, setsDone, setsDoneActive, lastBW, supersetUnits, unitOf, setLabel, defaultConfig, cleanupSg, modeOf, effortOf } from './lib/history.js'
 import { beep, vibrate } from './lib/sound.js'
 import { t, instrFor, getLang, INSTR_LANGS } from './lib/i18n.js'
 import { nav } from './lib/nav.js'
-import { starterRoutines } from './lib/starter.js'
+import { PLANS } from './lib/plans.js'
 import Media, { Thumb } from './components/Media.jsx'
 import Stepper from './components/Stepper.jsx'
 import Icon from './components/Icon.jsx'
@@ -42,14 +42,48 @@ export function confirmSheet(opts) {
   ui().openSheet(close => <ConfirmDialog {...opts} close={close} />, { kind: 'center' })
 }
 
-/* ============================ starter plan ============================ */
+/* ============================ predefined plans ============================ */
 export function loadStarterPlan() {
-  const [push, pull, legs] = starterRoutines()
+  planSelectorSheet()
+}
+
+function loadPlan(plan) {
+  const routines = plan.routines()
+  const customs = plan.customExercises()
   update(st => {
-    st.routines.push(push, pull, legs)
-    st.week[1] = push.id; st.week[3] = pull.id; st.week[5] = legs.id
+    // Register custom exercises so EXIDX resolves them immediately.
+    if (customs.length) {
+      st.customEx = st.customEx || []
+      customs.forEach(c => {
+        if (!st.customEx.find(x => x.id === c.id)) st.customEx.push(c)
+      })
+      registerCustom(st.customEx)
+    }
+    routines.forEach(r => st.routines.push(r))
+    // Schedule: Mon/Wed/Fri (indices 1, 3, 5) by default.
+    const days = Object.keys(plan.dayLabels || {}).map(Number).sort((a, b) => a - b)
+    days.forEach((d, i) => { if (routines[i]) st.week[d] = routines[i].id })
   })
-  toast(t('Starter plan loaded — Mon Push · Wed Pull · Fri Legs'))
+  toast(t('Plan loaded: {0}', plan.name))
+}
+
+function planSelectorSheet() {
+  ui().openSheet(close => <>
+    <h3>{t('Choose a plan')}</h3>
+    <div className="muted small" style={{ marginBottom: 16 }}>{t('Pick a predefined routine to get started. You can always change it later.')}</div>
+    <div className="list">
+      {PLANS.map(p => (
+        <button key={p.id} className="item tap" onClick={() => { close(); loadPlan(p) }}>
+          <span className="lrow-i"><Icon name={glyphOf(p.emoji)} /></span>
+          <div className="grow">
+            <div className="tt">{p.name}</div>
+            <div className="ss">{t('{0} exercises · {1} days', p.exCount, p.dayCount)}</div>
+          </div>
+          <Icon name="chevronRight" className="chev" />
+        </button>
+      ))}
+    </div>
+  </>)
 }
 
 /* ============================ weight picker (shared: body weight + goal) ============================ */

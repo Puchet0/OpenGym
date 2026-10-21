@@ -52,6 +52,22 @@ function Shell() {
   useEffect(() => { window.scrollTo(0, 0) }, [loc.pathname])
   // bound to the workout, not to the route — checking Stats mid-session keeps the screen on
   useWakeLock(!!S.active && S.keepAwake !== false)
+  // An on-screen keyboard shrinks the visual viewport, and a fixed-bottom bar then rides up
+  // into the middle of the screen and stays there until the field is blurred. Hide it while a
+  // text field has focus — the same trade every native tab bar makes.
+  useEffect(() => {
+    const root = document.documentElement
+    const typing = el => !!el && (el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' ||
+      el.isContentEditable || (el.tagName === 'INPUT' && !/^(checkbox|radio|button|submit|range|file|color)$/.test(el.type)))
+    const sync = () => root.classList.toggle('kb-open', typing(document.activeElement))
+    document.addEventListener('focusin', sync)
+    document.addEventListener('focusout', sync)
+    return () => {
+      document.removeEventListener('focusin', sync)
+      document.removeEventListener('focusout', sync)
+      root.classList.remove('kb-open')
+    }
+  }, [])
 
   const authed = user || isGuest
   if (!ready && !authed) return (

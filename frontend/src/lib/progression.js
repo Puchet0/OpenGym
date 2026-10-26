@@ -62,11 +62,13 @@ export function defaultIncrement(exId, unit) {
 export const DEFAULT_SEC_INCREMENT = 5
 
 // The policy in force for one exercise: its own override, else the routine's default, else
-// the mode's default. Reps keeps behaving the way the app always did (all reps → add a step).
+// the mode's default. Nothing moves the load unless you asked for it — a weight you did not
+// choose is a weight you stop trusting, and "why did my squat go up 5 kg?" is a worse
+// surprise than a plateau. Opting in is one tap per routine (or per exercise).
 export function policyFor(cfg, routine, mode) {
   const m = mode || modeOf(cfg || {})
   const allowed = POLICIES_FOR[m] || ['off']
-  const pick = (cfg && cfg.prog) || (routine && routine.prog) || (m === 'reps' ? 'linear' : 'off')
+  const pick = (cfg && cfg.prog) || (routine && routine.prog) || 'off'
   return allowed.includes(pick) ? pick : 'off'
 }
 

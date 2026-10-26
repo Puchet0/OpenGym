@@ -71,8 +71,8 @@ describe('stallCount', () => {
 })
 
 describe('policyFor', () => {
-  it('keeps the app\'s long-standing behaviour as the default for reps work', () => {
-    expect(policyFor({ id: LIFT }, null, 'reps')).toBe('linear')
+  it('leaves reps work alone too, unless a routine or exercise asks for progression', () => {
+    expect(policyFor({ id: LIFT }, null, 'reps')).toBe('off')
   })
   it('leaves timed and cardio work alone unless asked', () => {
     expect(policyFor({ id: LIFT, mode: 'time' }, null, 'time')).toBe('off')
@@ -86,6 +86,28 @@ describe('policyFor', () => {
     expect(policyFor({ id: LIFT, mode: 'time', prog: 'greyskull' }, null, 'time')).toBe('off')
     expect(policyFor({ id: CARDIO, prog: 'linear' }, null, 'cardio')).toBe('off')
     expect(POLICIES_FOR.cardio).toEqual(['off'])
+  })
+})
+
+describe('no policy asked for', () => {
+  // A routine that never opted in must not have its weights moved for it — not up after a
+  // clean session, and not down after misses. The prescription is inert and the sets the
+  // workout started with are the sets it runs.
+  const cfg = { id: LIFT, sets: 3, reps: 5, weight: 60 }
+
+  it('never advances, holds or deloads', () => {
+    for (const rows of [[[60, 5, 5, 5]], [[60, 5, 5, 3]], [[60, 4, 3, 2], [60, 3, 3, 2], [60, 2, 2, 1], [60, 2, 2, 1]]]) {
+      const p = nextPrescription(hist(LIFT, rows), cfg)
+      expect(p.kind).toBe('off')
+      expect(p.weight).toBeUndefined()
+      expect(p.reps).toBeUndefined()
+    }
+  })
+
+  it('leaves the workout sets exactly as they were', () => {
+    const sets = [{ w: 60, r: 5, done: false }, { w: 60, r: 5, done: false }]
+    const p = nextPrescription(hist(LIFT, [[60, 5, 5, 5]]), cfg)
+    expect(applyPrescription(sets, p)).toEqual(sets)
   })
 })
 

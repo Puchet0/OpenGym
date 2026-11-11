@@ -76,7 +76,7 @@ services:
     environment:
       WEB_PORT: ${WEB_PORT:-8080}
     ports:
-      - "${WEB_PORT:-8080}:80"
+      - "0.0.0.0:${WEB_PORT:-8087}:80"
     volumes:
       - media_img:/usr/share/nginx/html/img:ro
       - media_gif:/usr/share/nginx/html/gif:ro
